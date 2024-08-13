@@ -11,5 +11,5 @@ public class Test {
     @Id
     private int no;
 
-    private boolean delete;
+    private boolean del;
 }
