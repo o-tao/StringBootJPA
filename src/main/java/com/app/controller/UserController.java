@@ -28,10 +28,17 @@ public class UserController {
     @GetMapping("/users")
     public String users(Model model,
                         @RequestParam(name = "userNm", required = false, defaultValue = "") String userNm,
-                        @PageableDefault(size = 2) Pageable pageable) {
-        Page<UserEntity> users = userEntityRepository.findByUserNmContaining("", pageable);
+                        @PageableDefault(size = 3) Pageable pageable) {
+        Page<UserEntity> users = userEntityRepository.findByUserNmContaining(userNm, pageable);
         log.info("Users : {}", users);
+
+        int cnt = 5; // 페이지 이동 버튼 갯수
+        int end = Math.min(users.getTotalPages(), users.getPageable().getPageNumber() + cnt);
+        int start = Math.max(1, end - (cnt - 1));
+
         model.addAttribute("users", users);
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
         return "user";
     }
 
