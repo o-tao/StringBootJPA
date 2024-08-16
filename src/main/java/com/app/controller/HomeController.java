@@ -16,6 +16,7 @@ public class HomeController {
 
     @GetMapping("/test")
     public List<Test> test() {
+        
         return testRepository.findAll();
     }
 
