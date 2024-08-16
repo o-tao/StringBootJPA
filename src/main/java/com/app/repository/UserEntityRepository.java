@@ -1,6 +1,8 @@
 package com.app.repository;
 
 import com.app.entity.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,8 +18,14 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Integer>
 
     // 3. 이름 검색 조건: (비슷한 이름 조회) where user_nm like '%길%'
     public List<UserEntity> findByUserNmLike(String userNm); // 변수의 값에 와일드카드의 기호를 추가하여 사용
+
     public List<UserEntity> findByUserNmStartingWith(String userNm); // 변수의 뒤로 오는 값에 대하여 찾아준다 : 변수 + "%"
+
     public List<UserEntity> findByUserNmEndingWith(String userNm); // 변수의 앞에 오는 값에 대하여 찾아준다 : "%" + 변수
+
     public List<UserEntity> findByUserNmContaining(String userNm); // 변수의 앞뒤로 오는 값에 대하여 찾아준다 : "%" + 변수 + "%"
+
+    // 사용자 목록 페이징 처리
+    public Page<UserEntity> findByUserNmContaining(String userNm, Pageable pageable);
 
 }

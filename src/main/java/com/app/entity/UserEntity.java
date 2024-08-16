@@ -1,18 +1,21 @@
 package com.app.entity;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "user1")
+@Getter
+@Setter
+@ToString
+@Entity(name = "user")
+@Table(name = "user2")
 public class UserEntity {
 
     @Id
@@ -20,13 +23,22 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name = "user_pwd", length = 255)
+    @Column(name = "user_pwd", length = 255, nullable = false)
     private String userPwd;
 
-    @Column(name = "user_nm", length = 100)
+    @Column(name = "user_nm", unique = true, length = 100, nullable = false)
     private String userNm;
+
+    @Column(name = "del_yn", nullable = false, columnDefinition = "boolean default false")
+    private boolean delYn;
 
     @Column(name = "reg_date")
     @CreationTimestamp
-    private LocalDate regDate;
+    private LocalDateTime regDate;
+
+    @ManyToMany
+    @JoinTable(name = "urmapping",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_no"))
+    private Set<RoleEntity> roles = new HashSet<>();
 }

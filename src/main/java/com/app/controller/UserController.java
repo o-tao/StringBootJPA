@@ -1,32 +1,54 @@
 package com.app.controller;
 
+import com.app.entity.RoleEntity;
 import com.app.entity.UserEntity;
-import com.app.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.app.repository.RoleEntityRepository;
+import com.app.repository.UserEntityRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.Set;
 
-@RestController
+@Slf4j
+@Controller
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserEntityRepository UserEntityRepository;
+    private final RoleEntityRepository roleEntityRepository;
+    private final UserEntityRepository userEntityRepository;
 
-    // 검색
-    @GetMapping("/")
-    public UserEntity home() {
-        return userService.findByUserNm();
-//        return userService.findByUserNmAndUserPwd();
+    @GetMapping("/users")
+    public String users(Model model,
+                        @RequestParam(name = "userNm", required = false, defaultValue = "") String userNm,
+                        @PageableDefault(size = 2) Pageable pageable) {
+        Page<UserEntity> users = userEntityRepository.findByUserNmContaining("", pageable);
+        log.info("Users : {}", users);
+        model.addAttribute("users", users);
+        return "user";
     }
 
-    // like 검색
-//    @GetMapping("/")
-//    public List<UserEntity> home() {
-////        return userService.findByUserNmLike();
-////        return userService.findByUserNmStartingWith();
-////        return userService.findByUserNmEndingWith();
-////        return userService.findByUserNmContaining();
-//    }
+    @GetMapping("/grant")
+    public String grant() {
+        RoleEntity role = roleEntityRepository.findById(1).orElseThrow();
+        log.info("Role : {}", role);
+
+        UserEntity user = UserEntityRepository.findById(1).orElseThrow();
+        log.info("User : {}", user);
+
+        Set<RoleEntity> roles = user.getRoles();
+        roles.add(role);
+        user.setRoles(roles);
+
+        userEntityRepository.save(user);
+
+        return "redirect:/users";
+    }
 }
