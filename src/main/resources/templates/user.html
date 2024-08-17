@@ -39,9 +39,17 @@
     </form>
     <div>총 건수 : <span>0</span></div>
     <div class="list-group mt-3">
+
+        <!-- 사용자 정보 이벤트 -->
         <th:block th:each="user : ${users}">
-            <a class="list-group-item list-group-item-action" href="#">
+            <a class="list-group-item list-group-item-action" th:href="@{/detail(id=${user.userId})}">
+                <!-- 사용자 정보 -->
                 <span th:text="${user.userNm}"></span>
+
+                <!-- 사용자 권한 -->
+                <th:block th:each="role : ${user.roles}">
+                <span th:text="${role.roleNm}"></span>
+                </th:block>
             </a>
         </th:block>
     </div>

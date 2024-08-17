@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Set;
 
@@ -42,20 +43,31 @@ public class UserController {
         return "user";
     }
 
+    // 권한 부여
     @GetMapping("/grant")
     public String grant() {
-        RoleEntity role = roleEntityRepository.findById(1).orElseThrow();
-        log.info("Role : {}", role);
+        // 사용자 정보 가져오기
+        UserEntity user = UserEntityRepository.findById(3).orElseThrow();
 
-        UserEntity user = UserEntityRepository.findById(1).orElseThrow();
-        log.info("User : {}", user);
-
+        // 사용자가 가지고 있는 권한 목록 가져오기
         Set<RoleEntity> roles = user.getRoles();
+
+        // 신규 권한 가져오기
+        RoleEntity role = roleEntityRepository.findById(3).orElseThrow();
+
+        // 사용자 권한 목록 추가
         roles.add(role);
         user.setRoles(roles);
 
-        userEntityRepository.save(user);
+        // 수정된 사용자 정보 적용
+        UserEntityRepository.save(user);
 
         return "redirect:/users";
+    }
+
+    @ResponseBody
+    @GetMapping("/detail")
+    public UserEntity detail(@RequestParam("id") Integer id) {
+        return UserEntityRepository.findById(id).orElseThrow();
     }
 }
